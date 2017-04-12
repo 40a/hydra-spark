@@ -35,15 +35,17 @@ case class DispatchDetails[S](name: String, source: Source[S], operations: Opera
                               dsl: Config, fact: SparkContextFactory) {
 
   lazy val newCtx: ContextLike = {
+    val root = if (dsl.hasPath("transport")) dsl.getConfig("transport") else dsl.getConfig("dispatch")
+
     val sparkConf: SparkConf = {
-      import hydra.spark.configs._
-      val sparkRefConf = dsl.getConfig("transport").flattenAtKey("spark")
+       import hydra.spark.configs._
+      val sparkRefConf = root.flattenAtKey("spark")
       val jars = dsl.get[List[String]]("spark.jars").getOrElse(List.empty)
       val appName = sparkRefConf.get("spark.app.name").getOrElse(name)
       new SparkConf().setAll(sparkRefConf).setAppName(appName).setJars(jars)
     }
 
-    val ctx = fact.makeContext(sparkConf, dsl.getConfig("transport"))
+    val ctx = fact.makeContext(sparkConf,root)
 
     if (!ctx.isValidDispatch(this))
       throw new InvalidDslException(s"Spark context ${ctx.getClass.getName()} " +

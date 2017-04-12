@@ -40,7 +40,7 @@ case class TypesafeDSLParser(sourcesPkg: Seq[String] = Seq("hydra.spark.sources"
 
   def apply(dsl: Config): DispatchDetails[_] = {
 
-    val transport = dsl.getConfig("transport").resolve()
+    val transport = if (dsl.hasPath("transport")) dsl.getConfig("transport") else dsl.getConfig("dispatch").resolve()
 
     val source = transport.get[ConfigObject]("source") match {
       case Some(source) => factory.createSource(source, transport)

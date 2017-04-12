@@ -54,7 +54,7 @@ object HydraSparkLauncher extends Logging {
   val defaultSparkCfg = ConfigFactory.parseMap(
     Map(
       "spark.ui.enabled" -> "false",
-      "spark.yarn.queue" -> "hydra.dispatch",
+      "spark.yarn.queue" -> "hydra_transport",
       "spark.yarn.am.memory" -> "1g",
       "spark.driver.memory" -> "1g",
       "spark.akka.frameSize" -> "200",
